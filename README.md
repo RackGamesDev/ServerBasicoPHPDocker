@@ -1,4 +1,4 @@
-# SerberBasicoPHPDocker
+# ServerBasicoPHPDocker
 Archivos de configuración básicos de Docker para montar un servidor con Apache y PHP y MariaDB
 
 ## License
