@@ -1,3 +1,3 @@
 <?php
-    print("algo en el inicio");
+    echo "funciona";
 ?>

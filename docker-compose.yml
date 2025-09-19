@@ -11,6 +11,7 @@ services:
       - ./src/:/var/www/html
       - ./.docker/apache/000-default.conf:/etc/apache2/sites-enabled/000-default.conf
       - ./.docker/php/php.ini:/usr/local/etc/php/php.ini-development
+      - .docker/xdebug/debug.ini:/usr/local/etc/php/conf.d/debug.ini
     expose:
       - 80
     ports:
@@ -19,32 +20,44 @@ services:
       - reserdawtions
     links:
       - mariadboo
+      - mongoo
+      - redisoo
     extra_hosts:
       - "host.docker.internal:host-gateway"
+    #user: "1002:1002" # IMPORTANTE: UID:GID     (id -u ; id -g)
+    command: >
+      bash -c "chmod -R 0777 /var/www/html && apache2-foreground"
+
 
   mariadboo:
+    restart: on-failure
     build:
       context: ./.docker
       dockerfile: DockerfileDB
     image: mariadb
-    command:
-      --default-authentication-plugin=mysql_native_password
+    #command: 
+    #  --default-authentication-plugin=mysql_native_password
+
     env_file: "./.docker/.env"
     #environment:
     #  MARIADB_ROOT_PASSWORD: 123456789
     #  MARIADB_DATABASE: base
     #  MARIADB_USER: usuario
     #  MARIADB_PASSWORD: 123456789
+    #entrypoint: ["/bin/bash", "/entrypoint.sh"]
     volumes:
       - ./.docker/mariadb:/var/lib/mysql:Z
+    #  - ./.docker/mariadb/entrypoint.sh:/entrypoint.sh
+      - ./.docker/mariadb/01-fix-perms.sh:/docker-entrypoint-initdb.d/01-fix-perms.sh
     expose: 
       - 3306
     ports:
       - 3307:3306
     networks:
       - reserdawtions
+    #user: "1002:1002" # IMPORTANTE: UID:GID     (id -u ; id -g)
 
-  mongo:
+  mongoo:
     image: mongo
     restart: on-failure
     env_file: "./.docker/.env"
@@ -55,6 +68,18 @@ services:
      - reserdawtions
     ports:
       - 27018:27017
+    #user: "1002:1002" # IMPORTANTE: UID:GID     (id -u ; id -g)
+
+  redisoo:
+    image: redis:latest
+    volumes:
+        - .docker/redis/redis.conf:/usr/local/etc/redis/redis.conf
+    #    - ./.docker/redis/data:/data
+    ports:
+      - 6380:6379
+    networks:
+      - reserdawtions
+    #command: ["redis-server", "/usr/local/etc/redis/redis.conf"]
 
 
 networks:

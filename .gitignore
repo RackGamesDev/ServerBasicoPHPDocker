@@ -1,3 +1,6 @@
 .docker/.env
 .docker/mariadb/*
 no/
+src/vendor/
+src/composer.lock
+

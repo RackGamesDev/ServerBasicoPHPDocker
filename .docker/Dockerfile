@@ -4,7 +4,7 @@ RUN a2enmod rewrite
 
 RUN apt-get update && apt-get upgrade -y && apt-get install -y \
       procps \
-      #      nano \
+      nano \
       git \
       unzip \
       git-core \
